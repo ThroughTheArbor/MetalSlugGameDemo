@@ -19,10 +19,23 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rigidbody2DPlayer;
     public static bool isWalking;
     public bool faceRight = true;
+    //武器判定序号
+    bool isHandGun;
+    bool isBox;
+    bool isHandGrenade;
+    //Box与敌人触碰的triger
+    public GameObject BoxLeft;
+    public GameObject BoxRight;
+    //Box计时器
+    float boxTimer;
+    //手雷
+    public GameObject HandGrenade;
+
 
     void Update()
     {
-        move = new Vector2(walk.horizontal, walk.vertical);
+        //移动时的判定
+        move = new Vector2(walk.horizontal, walk.vertical);        
         if (!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f))
         {
             lookDirection.Set(move.x, move.y);
@@ -48,13 +61,53 @@ public class PlayerController : MonoBehaviour
         {
             isWalking = false;
         }
-
+        //武器判定
+        if (Input.GetKeyDown(KeyCode.Keypad1))
+        {
+            isHandGun = true;
+            animatorUp.SetBool("isHandGun", true);
+            isHandGrenade = false;
+            animatorUp.SetBool("isHandGrenade", false);
+            isBox = false;
+            animatorUp.SetBool("isBox", false);
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad2))
+        {
+            isHandGun = false;
+            animatorUp.SetBool("isHandGun", false);
+            isHandGrenade = false;
+            animatorUp.SetBool("isHandGrenade", false);
+            isBox = true;
+            animatorUp.SetBool("isBox", true);
+        }
+        if (Input.GetKeyDown(KeyCode.Keypad3))
+        {
+            isHandGun = false;
+            animatorUp.SetBool("isHandGun", false);
+            isHandGrenade = true;
+            animatorUp.SetBool("isHandGrenade", true);
+            isBox = false;
+            animatorUp.SetBool("isBox", false);
+        }
         //空格键发射
         if (Input.GetKeyDown(KeyCode.Space))
         {
             LaunchPlayer();
         }
-        
+        //box时间判定
+        if (boxTimer > 0)
+        {
+            boxTimer -= Time.deltaTime;
+            if (boxTimer < 0)
+            {
+                BoxLeft.SetActive(false);
+                BoxRight.SetActive(false);
+                print("拳击结束");
+            }
+        }
+
+
+        //ui播放完毕结束
         if (endTimer > 0)
         {
             endTimer -= Time.deltaTime;
@@ -151,6 +204,7 @@ public class PlayerController : MonoBehaviour
     
     void LaunchPlayer()
     {
+        if (isHandGun) { 
         //用数字显示bullet
         if (Bullet.CogBulletNum > 0) { 
             
@@ -158,14 +212,14 @@ public class PlayerController : MonoBehaviour
         {
             GameObject prohectfileObject = Instantiate(projectileRight, rigidbody2DPlayer.position + Vector2.right * 0.3f, Quaternion.identity);
             Bullet projectile = prohectfileObject.GetComponent<Bullet>();
-            animatorUp.SetTrigger("HandGun");
+            animatorUp.SetTrigger("Fire");
             projectile.Launch(lookDirection, 300);
         }
         else
         {
             GameObject prohectfileObject = Instantiate(projectileLeft, rigidbody2DPlayer.position + Vector2.left * 0.3f, Quaternion.identity);
             Bullet projectile = prohectfileObject.GetComponent<Bullet>();
-            animatorUp.SetTrigger("HandGun");
+            animatorUp.SetTrigger("Fire");
             projectile.Launch(lookDirection, 300);
         }
         }
@@ -173,7 +227,42 @@ public class PlayerController : MonoBehaviour
         {            
             print("没有零件，无法发射");
         }
+        }
+        if (isBox)
+        {
+            //active TRUE一定时间后，变为false
+            if (faceRight)
+            {
+                BoxRight.SetActive(true);
+                animatorUp.SetTrigger("Fire");
+                boxTimer = 0.5f;
+                print("向右拳击开始");
+            }
+            else
+            {
+                BoxLeft.SetActive(true);
+                animatorUp.SetTrigger("Fire");
+                boxTimer = 0.5f;
+                print("向左拳击开始");
+            }
 
-
+        }
+        if (isHandGrenade)
+        {
+            animatorUp.SetTrigger("Fire");
+            if (faceRight)
+            {
+                GameObject prohectfileObject = Instantiate(HandGrenade, rigidbody2DPlayer.position + Vector2.right * 0.3f, Quaternion.identity);
+                HandGrenade projectile = prohectfileObject.GetComponent<HandGrenade>();
+                projectile.Launch(lookDirection);
+                
+            }
+            else
+            {
+                GameObject prohectfileObject = Instantiate(HandGrenade, rigidbody2DPlayer.position + Vector2.left * 0.3f, Quaternion.identity);
+                HandGrenade projectile = prohectfileObject.GetComponent<HandGrenade>();
+                projectile.Launch(lookDirection);
+            }
+        }
     }
 }
