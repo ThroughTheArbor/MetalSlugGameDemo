@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     Animator animatorUp;
     Animator animatorDown;
     public Rigidbody2D rigidbody2DPlayer;
+    BoxCollider2D collider;
     public static bool isWalking;
     public bool faceRight = true;
     //武器判定序号
@@ -30,7 +31,12 @@ public class PlayerController : MonoBehaviour
     float boxTimer;
     //手雷
     public GameObject HandGrenade;
-
+    //跳跃
+    public float JumpHeight;
+    public GameObject SkyCollider;//天空墙的
+    bool isGround;//是否在地面
+    bool isCar;//是否在车上
+    bool isJumpBegin;
 
     void Update()
     {
@@ -106,9 +112,31 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        //是否在地面判定
+        isGround = collider.IsTouchingLayers(LayerMask.GetMask("floor"));
+        //跳跃后重回地面
+        if (isGround&&isJumpBegin)
+        {
+            if (!isCar)
+            {
+                SkyCollider.SetActive(true);
+                rigidbody2DPlayer.gravityScale = 0.0f;
+            }
 
-        //ui播放完毕结束
-        if (endTimer > 0)
+            //SkyCollider.SetActive(true);//在车上不能设为true，第二关才要设为true（从车上跳下去）
+            //用关卡来控制是否重力为0
+            //rigidbody2DPlayer.gravityScale = 0.0f;
+            print("到达某个面");
+            isJumpBegin = false;
+        }
+        //J键跳跃
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            Jump();
+        }
+
+            //ui播放完毕结束
+            if (endTimer > 0)
         {
             endTimer -= Time.deltaTime;
             if (endTimer <= 0)
@@ -126,7 +154,7 @@ public class PlayerController : MonoBehaviour
         animatorDown = Down.GetComponent<Animator>();
         animatorUp = Up.GetComponent<Animator>();
         rigidbody2DPlayer = GetComponent<Rigidbody2D>();
-        Debug.Log("获取了rigidbudy2d");
+        collider = GetComponent<BoxCollider2D>();
         currentHealth = 5;
         Bullet.CogBulletNum = 10;
         //HealthBar.instance.SetHealth(currentHealth / (float)maxHealth);
@@ -135,14 +163,13 @@ public class PlayerController : MonoBehaviour
    
     public int health
     {
-        get { return currentHealth; }
-        //set { currentHealth = value; }//这一句话弄掉就不能随便取值做外挂了//只能在方法里被调用
+        get { return currentHealth; }        
     }
     private int currentHealth;    
     float endTimer;
     int dieNum;
     //public AttentionControll attentionControll;
-    internal void ChangeHealth2(int acount)
+    internal void ChangeHealth(int acount)
     {
 
         if (acount < 0)
@@ -164,38 +191,7 @@ public class PlayerController : MonoBehaviour
         currentHealth = currentHealth + acount;
         //HealthBar.instance.SetHealth(currentHealth / (float)maxHealth);
     }
-    internal double ChangeHealth(double heal, double a)
-    {
-        double health = 67;
-        double m;
-        float b = 0;
-        heal = heal + a;//如果heal为满值就不加血，在血瓶或其他物品处的代码上，不在这里
-
-        //另一种版本的currenthealth的保密方法，输入值只有int i1,没有输出值，在捡草莓的脚本里作为一个方法使用
-        //例如：health= rubyController.ChangeHealth(health, 841);变为rubyController.ChangeHealth(1);
-        //int i1 = 3 ;
-        //currentHealth = currentHealth + i1;
-
-        if (a != 841 && a != 1682)
-        {
-            Debug.Log("账号异常");
-        } //账号异常判定
-        for (int i = 1; i < 6; i++)
-        {
-            double x = (heal - health) / 841;
-            if (x == i)
-            {
-                b = 3;
-            }
-        }//账号异常判定
-        if (b != 3)
-        {
-            Debug.Log("账号异常");
-        }//账号异常判定
-        return heal;
-        m = (heal - health) / 841;
-
-    }
+    
 
     public GameObject projectileLeft;
     public GameObject projectileRight;
@@ -263,6 +259,28 @@ public class PlayerController : MonoBehaviour
                 HandGrenade projectile = prohectfileObject.GetComponent<HandGrenade>();
                 projectile.Launch(lookDirection);
             }
+        }
+        
+    }
+    //跳跃方法
+    void Jump()
+    {
+        SkyCollider.SetActive(false);
+        animatorDown.SetTrigger("Jump");
+        rigidbody2DPlayer.gravityScale = 0.7f;
+        Vector2 jumpVel = new Vector2(0.0f, JumpHeight);
+        rigidbody2DPlayer.velocity = Vector2.up * jumpVel;
+        isJumpBegin=true;
+
+    }
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        
+        GameObject gameObject = collision.gameObject;
+        
+        if (gameObject.CompareTag("Car"))
+        {
+            isCar = true;
         }
     }
 }

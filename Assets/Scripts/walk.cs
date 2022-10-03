@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class walk : MonoBehaviour
 {
-    public Rigidbody2D rigidbody2D;//记得在unity里挂上，这个和下面start冲突，但没有关系，这样没有报错
+    public Rigidbody2D rigidbody2D;
     public float speed = 0.1f;
     public static float horizontal;
     public static float vertical;
@@ -22,7 +22,7 @@ public class walk : MonoBehaviour
     }
     //固定时间间隔执行
     public static Vector2 position;
-    //public AudioClip footStepClip;
+    
     void FixedUpdate()
     {
 
@@ -31,8 +31,6 @@ public class walk : MonoBehaviour
         position.y = position.y + speed * vertical * Time.deltaTime;
         // 新位置给游戏对象
         rigidbody2D.position = position;
-        //在这里放声音，每次都会放
-        //RubyController controller = GetComponent<RubyController>();
-        //controller.PlaySounds(footStepClip, 1.0f);
+        
     }
 }

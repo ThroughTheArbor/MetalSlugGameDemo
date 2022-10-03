@@ -40,12 +40,12 @@ public class Bullet : MonoBehaviour
         }
 
     }
-    public ParticleSystem hitEffect;
+    
 
     
-    public void OnCollisionEnter2D(Collision2D collision)
+    public void OnTriggerEnter2D(Collider2D collision)
     {
-        EnemyController enemyController = collision.collider.GetComponent<EnemyController>();
+        EnemyController enemyController = collision.GetComponent<EnemyController>();
         if (enemyController != null)
         {          
             enemyController.Hitted(1);          
@@ -54,9 +54,10 @@ public class Bullet : MonoBehaviour
         Debug.Log("与子弹发生碰撞的是" + collision.gameObject);
 
         Destroy(gameObject);
-        Instantiate(hitEffect, transform.position, Quaternion.identity);
+        
     }
     /*
+     //玩家获得子弹
     private void OnTriggerEnter2D(Collider2D collision)
     {
         PlayerController playerController = collision.GetComponent<PlayerController>();

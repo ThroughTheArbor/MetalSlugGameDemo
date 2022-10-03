@@ -15,8 +15,8 @@ public class EnemyController : MonoBehaviour
     public Enemy enemy;
     void Start()
     {
-        enemy.maxHealth = 3;
-        enemy.currentHealth = enemy.maxHealth;
+        //enemy.maxHealth = 3;
+        //enemy.currentHealth = enemy.maxHealth;
     }
 
 
