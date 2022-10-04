@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Bullet : MonoBehaviour
 {
     Rigidbody2D rigidbody2d;
-    public static int CogBulletNum;    
-    
+    public static int CogBulletNum;
+    public bool isDG=false;
+    public  Vector3 targetPosition;
+    public float speed =2;
+    public static bool isFort;
     // Start is called before the first frame update
     private void Start()
     {
@@ -27,9 +31,16 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    private void FixedUpdate()
+    {
+        if (isDG)
+        {
+            rigidbody2d.DOMove(targetPosition, speed).SetSpeedBased();
+        }
+    }
     internal void Launch(Vector2 direction, float force)
     {
-        if (CogBulletNum > 0)
+        if (CogBulletNum > 0||isFort)
         {
             rigidbody2d.AddForce(direction * force);
             CogBulletNum--;

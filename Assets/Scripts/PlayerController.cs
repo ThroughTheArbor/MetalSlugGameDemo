@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour
     bool isGround;//是否在地面
     bool isCar;//是否在车上
     bool isJumpBegin;
+    //改变玩家位置
 
     void Update()
     {
@@ -95,11 +96,7 @@ public class PlayerController : MonoBehaviour
             isBox = false;
             animatorUp.SetBool("isBox", false);
         }
-        //空格键发射
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            LaunchPlayer();
-        }
+        
         //box时间判定
         if (boxTimer > 0)
         {
@@ -198,7 +195,7 @@ public class PlayerController : MonoBehaviour
     float attentionTimer;
    
     
-    void LaunchPlayer()
+    public void LaunchPlayer()
     {
         if (isHandGun) { 
         //用数字显示bullet
@@ -282,5 +279,13 @@ public class PlayerController : MonoBehaviour
         {
             isCar = true;
         }
+    }
+    public void ChangePlayerPosition(Vector3 pos)
+    {
+        rigidbody2DPlayer.position = pos;
+    }
+    public void ChangeGravity(float num)
+    {
+        rigidbody2DPlayer.gravityScale = num;
     }
 }

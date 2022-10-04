@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6760803673480688260}
   - component: {fileID: 8720804053577581850}
   - component: {fileID: -1481458207035475070}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: HandGunBulletLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: ec0915138dfd9784680cc525543eecc7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
@@ -115,6 +115,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c8437f7100e01f4896034c935b0ab1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDG: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  speed: 2
 --- !u!50 &-1481458207035475070
 Rigidbody2D:
   serializedVersion: 4
