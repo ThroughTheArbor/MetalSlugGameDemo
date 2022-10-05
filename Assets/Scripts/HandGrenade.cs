@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class HandGrenade : MonoBehaviour
 {
+    public float timeInvincible = 1.50f;
     public GameObject hurtZone;
     Animator animator;
+    float invincibleTimer;
+    bool isInvincible = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,7 +18,14 @@ public class HandGrenade : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (isInvincible)
+        {
+            invincibleTimer -= Time.deltaTime;
+            if (invincibleTimer <= 0)
+            {
+                isInvincible = false;
+            }
+        }
     }
     //手雷落地之前
     private void OnCollisionEnter2D(Collision2D collision)
@@ -28,15 +38,23 @@ public class HandGrenade : MonoBehaviour
             print("碰到了地板");
             hurtZone.SetActive(true);
             animator.SetTrigger("Fire");
+            GetComponent<BoxCollider2D>().enabled = false;
         }
     }
     //进入hurtZone
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        EnemyController enemyController = collision.GetComponent<EnemyController>();
-        if (enemyController != null)
+        Damageable da = collision.GetComponent<Damageable>();
+        if (da != null)
         {
-            enemyController.Hitted(1);
+
+            if (!isInvincible)
+            {
+                da.GetHitted();
+                isInvincible = true;
+                invincibleTimer = timeInvincible;
+            }
+            
         }
         else
         {
@@ -58,7 +76,7 @@ public class HandGrenade : MonoBehaviour
         }
         else
         {
-            print("没有零件，无法发射");
+            print("没有手榴弹，无法发射");
         }
     }
 }

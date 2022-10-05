@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 8558322048879315394}
   - component: {fileID: 3861224496115391143}
   - component: {fileID: 8146659377628193623}
-  m_Layer: 11
-  m_Name: image24031
+  m_Layer: 13
+  m_Name: Fort
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,3 +149,4 @@ MonoBehaviour:
   isDG: 0
   targetPosition: {x: 0, y: 0, z: 0}
   speed: 2
+  isEnemy: 0

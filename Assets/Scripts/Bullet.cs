@@ -5,12 +5,14 @@ using DG.Tweening;
 
 public class Bullet : MonoBehaviour
 {
+    //bullet要有Rigidbody2D，trigger
     Rigidbody2D rigidbody2d;
     public static int CogBulletNum;
     public bool isDG=false;
     public  Vector3 targetPosition;
     public float speed =2;
     public static bool isFort;
+    public bool isEnemy;//敌人子弹无限
     // Start is called before the first frame update
     private void Start()
     {
@@ -40,31 +42,53 @@ public class Bullet : MonoBehaviour
     }
     internal void Launch(Vector2 direction, float force)
     {
-        if (CogBulletNum > 0||isFort)
+        if(isFort || isEnemy)
+        {
+            rigidbody2d.AddForce(direction * force);
+        }
+        else
+        if(CogBulletNum > 0)
         {
             rigidbody2d.AddForce(direction * force);
             CogBulletNum--;
+            print("当前子弹数是" + CogBulletNum);
         }
+        
         else
-        {            
-            print("没有零件，无法发射");
+        {
+            print("没有子弹了，当前子弹数是" + CogBulletNum);
         }
 
     }
-    
+    public static GameObject InstantiateBullet(GameObject bulletPrefab,Transform transform)
+    {
+        GameObject gameObject = Instantiate(bulletPrefab, transform);
+        return gameObject;  
+    }
 
     
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        EnemyController enemyController = collision.GetComponent<EnemyController>();
-        if (enemyController != null)
-        {          
-            enemyController.Hitted(1);          
-
+        if (isEnemy)
+        {
+            PlayerController playerController = collision.GetComponent<PlayerController>();
+            if(playerController != null)
+            {
+                playerController.ChangeHealth(-1);
+            }
+            Destroy(gameObject);
         }
-        Debug.Log("与子弹发生碰撞的是" + collision.gameObject);
+        else
+        {
+            Damageable da = collision.GetComponent<Damageable>();
+            if (da != null)
+            {
+                da.GetHitted();
+            }
+            //Debug.Log("与子弹发生碰撞的是" + collision.gameObject);
 
-        Destroy(gameObject);
+            Destroy(gameObject);
+        }
         
     }
     /*

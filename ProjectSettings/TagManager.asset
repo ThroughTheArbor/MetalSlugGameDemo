@@ -18,9 +18,9 @@ TagManager:
   - floor
   - AiRWallForPlayer
   - Player
-  - Bullet
+  - PlayerBullet
   - Enemy
-  - 
+  - EnemyBullet
   - 
   - 
   - 

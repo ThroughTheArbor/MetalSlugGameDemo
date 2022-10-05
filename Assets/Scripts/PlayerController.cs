@@ -6,10 +6,13 @@ public class PlayerController : MonoBehaviour
 {
     internal class Player
     {        
-        internal int maxHealth = 3;
-        internal int currentHealth = 3;
-        internal int bulletNum;
+        internal int maxHealth ;
+        internal int currentHealth ;
+        internal int bulletNum;      
+
     }
+    Player player;
+    
     Vector2 lookDirection = new Vector2(1, 0);
     Vector2 move;
     public GameObject Up;
@@ -39,8 +42,17 @@ public class PlayerController : MonoBehaviour
     bool isJumpBegin;
     //改变玩家位置
 
+    float endTimer;
+    int dieNum;
+    public GameObject projectileLeft;
+    public GameObject projectileRight;
+    float attentionTimer;
     void Update()
     {
+        
+        //子弹实时更新
+        Bullet.CogBulletNum= player.bulletNum;
+              
         //移动时的判定
         move = new Vector2(walk.horizontal, walk.vertical);        
         if (!Mathf.Approximately(move.x, 0.0f) || !Mathf.Approximately(move.y, 0.0f))
@@ -148,31 +160,30 @@ public class PlayerController : MonoBehaviour
     
     internal void Start()
     {        
-        animatorDown = Down.GetComponent<Animator>();
-        animatorUp = Up.GetComponent<Animator>();
+        
         rigidbody2DPlayer = GetComponent<Rigidbody2D>();
         collider = GetComponent<BoxCollider2D>();
-        currentHealth = 5;
-        Bullet.CogBulletNum = 10;
+        GenerateData();
+        animatorUp = Up.GetComponent<Animator>();
+        animatorDown = Down.GetComponent<Animator>();
+        //Bullet.CogBulletNum = 10;
         //HealthBar.instance.SetHealth(currentHealth / (float)maxHealth);
         
     }
-   
-    public int health
+    void GenerateData()
     {
-        get { return currentHealth; }        
+        player = new Player();
+        player.maxHealth = 3;
+        player.currentHealth = 3;
+        player.bulletNum = 10;
     }
-    private int currentHealth;    
-    float endTimer;
-    int dieNum;
-    //public AttentionControll attentionControll;
     internal void ChangeHealth(int acount)
     {
 
         if (acount < 0)
         {
 
-            if (currentHealth <= 0)
+            if (player.currentHealth <= 0)
             {
                 if (dieNum <= 0)
                 {
@@ -185,22 +196,17 @@ public class PlayerController : MonoBehaviour
 
             animatorUp.SetTrigger("Hit");
         }
-        currentHealth = currentHealth + acount;
+        player.currentHealth = player.currentHealth + acount;
+        print("玩家血量改变"+acount+"现在血量是"+player.currentHealth);
         //HealthBar.instance.SetHealth(currentHealth / (float)maxHealth);
     }
-    
 
-    public GameObject projectileLeft;
-    public GameObject projectileRight;
-    float attentionTimer;
-   
-    
     public void LaunchPlayer()
     {
         if (isHandGun) { 
         //用数字显示bullet
-        if (Bullet.CogBulletNum > 0) { 
-            
+        if (Bullet.CogBulletNum > 0) {
+                Parameter.hittedNum = 1;
             if (faceRight)
         {
             GameObject prohectfileObject = Instantiate(projectileRight, rigidbody2DPlayer.position + Vector2.right * 0.3f, Quaternion.identity);
@@ -217,12 +223,14 @@ public class PlayerController : MonoBehaviour
         }
         }
         else
-        {            
-            print("没有零件，无法发射");
-        }
+        {
+                print("没有子弹了，当前子弹数是" + Bullet.CogBulletNum);
+            }
+
         }
         if (isBox)
         {
+            Parameter.hittedNum = 1;
             //active TRUE一定时间后，变为false
             if (faceRight)
             {
@@ -242,6 +250,7 @@ public class PlayerController : MonoBehaviour
         }
         if (isHandGrenade)
         {
+            Parameter.hittedNum = 2;
             animatorUp.SetTrigger("Fire");
             if (faceRight)
             {

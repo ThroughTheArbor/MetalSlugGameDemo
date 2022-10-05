@@ -4,24 +4,26 @@ using UnityEngine;
 
 public class BoxHurtZone : MonoBehaviour
 {
-    public float timeInvincible = 1.50f;    
-    float invincibleTimer;
-
+    //public float timeInvincible = 1.50f;    
+    //float invincibleTimer;
+    //bool isInvincible = false;
     void OnTriggerEnter2D(Collider2D collision)
     {
-        //是否获得EnemyController
-        EnemyController enemyController = collision.GetComponent<EnemyController>();
-        if (enemyController != null)
+        
+        Damageable da = collision.GetComponent<Damageable>();
+        if (da != null)
         {
-                enemyController.Hitted(1);             
-                
+            da.GetHitted();
+            /*if (!isInvincible)
+            {
+                enemyController.parameter.getHit = true;
+                isInvincible = true;
                 invincibleTimer = timeInvincible;
-            
+            }*/
         }
-        else
-        {
-            print("未获得敌人");
-        }
+
+        //Debug.Log("与子弹发生碰撞的是" + collision.gameObject);
+
     }
     // Start is called before the first frame update
     void Start()
@@ -31,7 +33,14 @@ public class BoxHurtZone : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-       
+    {/*
+        if (isInvincible)
+        {
+            invincibleTimer -= Time.deltaTime;
+            if (invincibleTimer <= 0)
+            {
+                isInvincible = false;
+            }
+        }*/
     }
 }
