@@ -123,6 +123,7 @@ public class PlayerController : MonoBehaviour
 
         //是否在地面判定
         isGround = collider.IsTouchingLayers(LayerMask.GetMask("floor"));
+        isGround = collider.IsTouchingLayers(LayerMask.GetMask("car"));
         //跳跃后重回地面
         if (isGround&&isJumpBegin)
         {
@@ -139,6 +140,10 @@ public class PlayerController : MonoBehaviour
             isJumpBegin = false;
         }
         //J键跳跃
+        if (Fort.isLevelOne)
+        {
+            //第一关不用这个跳跃
+        }else
         if (Input.GetKeyDown(KeyCode.J))
         {
             Jump();
@@ -173,8 +178,8 @@ public class PlayerController : MonoBehaviour
     void GenerateData()
     {
         player = new Player();
-        player.maxHealth = 3;
-        player.currentHealth = 3;
+        player.maxHealth = 10;
+        player.currentHealth = player.maxHealth;
         player.bulletNum = 10;
     }
     internal void ChangeHealth(int acount)
@@ -212,14 +217,16 @@ public class PlayerController : MonoBehaviour
             GameObject prohectfileObject = Instantiate(projectileRight, rigidbody2DPlayer.position + Vector2.right * 0.3f, Quaternion.identity);
             Bullet projectile = prohectfileObject.GetComponent<Bullet>();
             animatorUp.SetTrigger("Fire");
-            projectile.Launch(lookDirection, 300);
+            Vector2 vector2 = new Vector2(1,0);
+            projectile.Launch(vector2, 300);
         }
         else
         {
             GameObject prohectfileObject = Instantiate(projectileLeft, rigidbody2DPlayer.position + Vector2.left * 0.3f, Quaternion.identity);
             Bullet projectile = prohectfileObject.GetComponent<Bullet>();
             animatorUp.SetTrigger("Fire");
-            projectile.Launch(lookDirection, 300);
+            Vector2 vector2 = new Vector2(-1,0);
+            projectile.Launch(vector2, 300);
         }
         }
         else
@@ -269,7 +276,7 @@ public class PlayerController : MonoBehaviour
         
     }
     //跳跃方法
-    void Jump()
+    public  void Jump()
     {
         SkyCollider.SetActive(false);
         animatorDown.SetTrigger("Jump");
@@ -277,7 +284,7 @@ public class PlayerController : MonoBehaviour
         Vector2 jumpVel = new Vector2(0.0f, JumpHeight);
         rigidbody2DPlayer.velocity = Vector2.up * jumpVel;
         isJumpBegin=true;
-
+        //在update里还有是否在地上的判定
     }
     private void OnCollisionStay2D(Collision2D collision)
     {
@@ -296,5 +303,10 @@ public class PlayerController : MonoBehaviour
     public void ChangeGravity(float num)
     {
         rigidbody2DPlayer.gravityScale = num;
+    }
+    public void ChangeBulletNum(int n)
+    {
+        player.bulletNum += n;
+        print("现在的子弹数是"+player.bulletNum);
     }
 }

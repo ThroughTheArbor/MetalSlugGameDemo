@@ -6,6 +6,7 @@ TagManager:
   tags:
   - floor
   - Car
+  - PlayerBullet
   layers:
   - Default
   - TransparentFX
@@ -21,8 +22,8 @@ TagManager:
   - PlayerBullet
   - Enemy
   - EnemyBullet
-  - 
-  - 
+  - car
+  - EnvironmentThing
   - 
   - 
   - 

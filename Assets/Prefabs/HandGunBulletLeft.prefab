@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -1481458207035475070}
   m_Layer: 11
   m_Name: HandGunBulletLeft
-  m_TagString: Untagged
+  m_TagString: PlayerBullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28,7 +28,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8773638366790727006}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.129, y: -2.83, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -118,6 +118,8 @@ MonoBehaviour:
   isDG: 0
   targetPosition: {x: 0, y: 0, z: 0}
   speed: 2
+  isEnemy: 0
+  enemyHitNum: 0
 --- !u!50 &-1481458207035475070
 Rigidbody2D:
   serializedVersion: 4

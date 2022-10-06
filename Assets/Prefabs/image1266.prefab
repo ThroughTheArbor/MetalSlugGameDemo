@@ -150,3 +150,4 @@ MonoBehaviour:
   targetPosition: {x: 0, y: 0, z: 0}
   speed: 2
   isEnemy: 0
+  enemyHitNum: -1

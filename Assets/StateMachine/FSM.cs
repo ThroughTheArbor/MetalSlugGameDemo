@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public enum StateType
 {
@@ -22,15 +23,19 @@ public class Parameter
     public float moveSpeed;
     public float attackSpeed;
     public GameObject BulletPrefab;
-    public Transform transform;//获取FSM当前挂的物体的transform    
-    public Transform target;
+    public Transform transform;//获取FSM当前挂的物体的transform
+    internal Rigidbody2D rigidbody2;                           
+    internal Transform target;
     public Transform attackPoint;
     public float attackArea;
-    public LayerMask targetLayer;    
+    public LayerMask targetLayer;
+    public GameObject parachuteObject;
+    internal CanvasGroup parachuteCanvasGroup;
     internal Animator animator;
     internal SpriteRenderer spriteRenderer;
     internal bool getHit;
     internal bool dead;
+    internal GameObject enemy;
 }
 public class FSM : MonoBehaviour
 {
@@ -42,11 +47,14 @@ public class FSM : MonoBehaviour
     private void Awake()
     {
         parameter.animator = transform.GetComponent<Animator>();//这里放在Start里面，会因为初始化顺序问题在parameter.animator.Play("Idle");这里报错
+        parameter.parachuteCanvasGroup = parameter.parachuteObject.GetComponent<CanvasGroup>();
     }
     void Start()
     {
+        
         parameter.transform = GetComponent<Transform>();
-        parameter.spriteRenderer = GetComponent<SpriteRenderer>();  
+        parameter.spriteRenderer = GetComponent<SpriteRenderer>();
+        parameter.rigidbody2 = GetComponent<Rigidbody2D>();
         states.Add(StateType.Idle, new IdleState(this));
         //states.Add(StateType.Patrol, new PatrolState(this));
         states.Add(StateType.Chase, new ChaseState(this));
@@ -55,6 +63,7 @@ public class FSM : MonoBehaviour
         states.Add(StateType.Hit, new HitState(this));
         states.Add(StateType.Death, new DeathState(this));
 
+        parameter.enemy = gameObject;        
         TransitionState(StateType.Idle);
 
         
@@ -123,5 +132,13 @@ public class FSM : MonoBehaviour
     public void OnDestroy()
     {
         Destroy(gameObject);
+    }
+    public void GetChildColorRed()
+    {
+        SpriteRenderer[] spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+        {
+            spriteRenderer.DOColor(Color.red, 0.2f).SetLoops(2, LoopType.Yoyo).ChangeStartValue(Color.white);
+        }
     }
 }

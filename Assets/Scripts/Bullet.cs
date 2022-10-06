@@ -13,6 +13,7 @@ public class Bullet : MonoBehaviour
     public float speed =2;
     public static bool isFort;
     public bool isEnemy;//敌人子弹无限
+    public int enemyHitNum;
     // Start is called before the first frame update
     private void Start()
     {
@@ -74,7 +75,7 @@ public class Bullet : MonoBehaviour
             PlayerController playerController = collision.GetComponent<PlayerController>();
             if(playerController != null)
             {
-                playerController.ChangeHealth(-1);
+                playerController.ChangeHealth(enemyHitNum);
             }
             Destroy(gameObject);
         }
@@ -84,6 +85,7 @@ public class Bullet : MonoBehaviour
             if (da != null)
             {
                 da.GetHitted();
+                //Destroy(gameObject);
             }
             //Debug.Log("与子弹发生碰撞的是" + collision.gameObject);
 

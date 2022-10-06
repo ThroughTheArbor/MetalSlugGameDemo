@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8558322048879315394}
   - component: {fileID: 3861224496115391143}
   - component: {fileID: 8146659377628193623}
-  m_Layer: 13
+  m_Layer: 11
   m_Name: Fort
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.116475224}
+  m_Offset: {x: 0, y: 0.00823193}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -132,7 +132,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.13, y: 0.34704947}
+  m_Size: {x: 0.18918341, y: 0.18974622}
   m_EdgeRadius: 0
 --- !u!114 &8146659377628193623
 MonoBehaviour:

@@ -17,7 +17,17 @@ public class IdleState : IState
     public void OnEnter()
     {
         Debug.Log("进入idle");
-        parameter.animator.Play("Idle");        
+        if (parameter.enemyType == 0)
+        {
+            //要缓慢移动到posy=0.96的位置//或者设置它的gravityScale
+            //然后进入攻击状态
+            //parameter.rigidbody2.gravityScale = 0.7;
+            PlaneRunControll.isDown = true;            
+        }
+        else
+        {
+            parameter.animator.Play("Idle");
+        }        
     }
 
     public void OnUpdate()
@@ -28,11 +38,32 @@ public class IdleState : IState
         {
             manager.TransitionState(StateType.Hit);
         }
-        if (parameter.target != null )
+        if(parameter.enemyType == 0)
         {
-            //manager.TransitionState(StateType.React);
-            manager.TransitionState(StateType.Chase);
+            if (parameter.transform.position.y<=0.96f)
+            {
+                //parameter.rigidbody2.gravityScale = 0;
+                PlaneRunControll.isDown = false;
+                manager.TransitionState(StateType.Attack);
+            }
         }
+        else
+        {
+            if (parameter.target != null)
+            {
+                if (parameter.enemyType == 2)
+                {
+                    manager.TransitionState(StateType.Attack);
+                }
+                else
+                {
+                    //manager.TransitionState(StateType.React);
+                    manager.TransitionState(StateType.Chase);
+                }
+                
+            }
+        }
+        
         
         if (timer >= parameter.idleTime)
         {
@@ -48,7 +79,7 @@ public class IdleState : IState
         timer = 0;
     }
 }
-
+#region  PatrolState
 /*
 public class PatrolState : IState
 {
@@ -99,7 +130,7 @@ public class PatrolState : IState
         }
     }
 }*/
-
+#endregion
 public class ChaseState : IState
 {
     private FSM manager;
@@ -113,7 +144,15 @@ public class ChaseState : IState
     public void OnEnter()
     {
         Debug.Log("进入chase");
-        parameter.animator.Play("Chase");
+        if (parameter.enemyType == 0||parameter.enemyType==2)
+        {
+            
+                manager.TransitionState(StateType.Attack);            
+        }
+        else
+        {
+            parameter.animator.Play("Chase");
+        }
     }
 
     public void OnUpdate()
@@ -122,14 +161,26 @@ public class ChaseState : IState
         {
             manager.TransitionState(StateType.Hit);
         }
-        manager.FlipTo(parameter.target);
-        if (parameter.target)
+        if (parameter.enemyType == 0)
         {
-            manager.transform.position = Vector2.MoveTowards(manager.transform.position,
-            parameter.target.position, parameter.moveSpeed * Time.deltaTime);
+            
         }
-
+        else
+        {
+            manager.FlipTo(parameter.target);
+            if (parameter.target)
+            {
+                manager.transform.position = Vector2.MoveTowards(manager.transform.position,
+                parameter.target.position, parameter.moveSpeed * Time.deltaTime);
+            }
+        }        
         
+        if (parameter.enemyType == 1) { 
+        if(parameter.target != null && parameter.target.position.y >= parameter.transform.position.y)
+        {
+            parameter.animator.Play("AttackDown");
+        }
+        }
         if (parameter.target == null )
         {
             manager.TransitionState(StateType.Idle);
@@ -201,11 +252,18 @@ public class AttackState : IState
     {        
         Debug.Log("进入attack");
         timer = parameter.attackSpeed;
-        parameter.animator.Play("Attack");
-        //发射子弹
         if (parameter.enemyType == 0)
         {
-            //飞机发射子弹
+
+        }
+        else
+        {
+            parameter.animator.Play("Attack");
+        }            
+        //发射子弹
+
+        /*
+            //飞机发射子弹//这个是实现子弹出仓，到与player同一个y值后再发射//已经实现player在炮台上的跳跃闪避
             GameObject bullet = Bullet.InstantiateBullet(parameter.BulletPrefab, parameter.attackPoint.transform);
             Bullet bulletCS = bullet.GetComponent<Bullet>();
             bulletCS.isEnemy = true;
@@ -225,18 +283,17 @@ public class AttackState : IState
                 Vector2 vector2 = new Vector2(0, 1);
                 bulletCS.Launch(vector2, 300);
             }
-            Debug.Log("飞机发射完了一次子弹");
-        }
-        else
-        {
+            Debug.Log("飞机发射完了一次子弹");*/
+        
             if (parameter.target != null) { 
             //普通发射子弹
             GameObject bullet = Bullet.InstantiateBullet(parameter.BulletPrefab, parameter.attackPoint.transform);
             Bullet bulletCS = bullet.GetComponent<Bullet>();
             bulletCS.isEnemy = true;
+            if (parameter.enemyType == 3) { 
             if (parameter.target.position.x <= parameter.transform.position.x)
             {
-                Vector2 vector2 = new Vector2(-1, 0);
+                Vector2 vector2 = new Vector2(-1,0);
                 bulletCS.Launch(vector2, 500);
             }
             else
@@ -244,10 +301,19 @@ public class AttackState : IState
                 Vector2 vector2 = new Vector2(1, 0);
                 bulletCS.Launch(vector2, 500);
             }
+                }else if (parameter.enemyType==1||parameter.enemyType==0)
+                {
+                    Vector2 vector2 = new Vector2(parameter.target.position.x - parameter.transform.position.x, parameter.target.position.y - parameter.transform.position.y);
+                    bulletCS.Launch(vector2, 500);
+                }else if(parameter.enemyType == 2)
+            {
+                Vector2 vector2 = new Vector2(-1, 0);
+                bulletCS.Launch(vector2, 500);
+            }
             }
             //Vector2 vector2 = new Vector2(parameter.target.position.x, parameter.target.position.y);
             //bulletCS.Launch(vector2, 300);            
-        }
+        
     }
     
     public void OnUpdate()
@@ -262,11 +328,19 @@ public class AttackState : IState
         {
             manager.TransitionState(StateType.Hit);
         }
+
         if (parameter.enemyType == 0)
         {
             
-        }    
-            if (isAttackDone && info.normalizedTime >= .95f)
+        }
+        if (parameter.enemyType == 1)
+        {
+            if (parameter.target != null && parameter.target.position.y >= parameter.transform.position.y)
+            {
+                parameter.animator.Play("AttackDown");
+            }
+        }
+        if (isAttackDone && info.normalizedTime >= .95f)
         {
             manager.TransitionState(StateType.Chase);
         }
@@ -294,6 +368,11 @@ public class HitState : IState
         
         Debug.Log("进入hit");
         //parameter.animator.Play("Hit");
+        if (parameter.enemyType == 2)
+        {
+            //获取所有的子物体的spritrrenderer
+            manager.GetChildColorRed();
+        }
         parameter.spriteRenderer.DOColor(Color.red, 0.2f).SetLoops(2, LoopType.Yoyo).ChangeStartValue(Color.white);
         parameter.health -= Parameter.hittedNum;
         if (parameter.health <= 0)
@@ -326,6 +405,9 @@ public class DeathState : IState
     private FSM manager;
     private Parameter parameter;
     private AnimatorStateInfo info;
+    float timer;
+    float fadeDuration = 0.03f;
+    
     public DeathState(FSM manager)
     {
         this.manager = manager;
@@ -335,21 +417,54 @@ public class DeathState : IState
     {
         Debug.Log("进入death");
         parameter.animator.Play("Death");
-        //不同敌人死亡方式有一些区别
+        BoxCollider2D boxCollider2 = parameter.enemy.GetComponent<BoxCollider2D>();
+        if (boxCollider2 != null)
+        {
+            boxCollider2.enabled = false;
+        }        
         if (parameter.enemyType == 1)
         {
-
+            GameObject parachute = parameter.transform.Find("parachute").gameObject;
+            parameter.transform.rotation = Quaternion.Euler(0, 0, -30);
+            
         }
         parameter.dead = true;
+        if (parameter.enemyType == 0)
+        {
+            //旋转
+            //加速坠落            
+            PlaneRunControll.isDown = true;
+            parameter.transform.rotation = Quaternion.Euler(0, 0, 30);
+        }
+        
     }
 
     public void OnUpdate()
-    {
-        info = parameter.animator.GetCurrentAnimatorStateInfo(0);
-        if (info.normalizedTime >= .95f)
+    {       
+        
+            timer += Time.deltaTime;
+            //parameter.parachuteCanvasGroup.alpha = 1 - (timer / fadeDuration);
+        parameter.parachuteObject.SetActive(false);
+        if(parameter.enemyType == 1|| parameter.enemyType == 0)
         {
-            manager.OnDestroy();
+            parameter.rigidbody2.gravityScale = 0.7f;
         }
+        info = parameter.animator.GetCurrentAnimatorStateInfo(0);
+        if(parameter.enemyType == 0)
+        {
+            if (info.normalizedTime >= .95f && timer >= 3.0f)
+            {
+                manager.OnDestroy();
+            }
+        }
+        else
+        {
+            if (info.normalizedTime >= .95f && timer >= 0.7f)
+            {
+                manager.OnDestroy();
+            }
+        }
+        
     }
 
     public void OnExit()
